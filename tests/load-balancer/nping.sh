@@ -5,6 +5,7 @@
 # lotto-client3 (10.100.0.150) and lotto-client4 (10.100.0.160)
 
 sent=1000
+target=950
 rate=100 # Requests pr second, higher than 5 requires sudo
 mode="--tcp-connect"
 port=90
@@ -17,7 +18,7 @@ received=$(printf "%s" "$res" | cut -d ' ' -f 8)
 # successful=$(printf "%s" "$res" | cut -d ' ' -f 8)
 # failed=$(printf "%s" "$res" | cut -d ' ' -f 11)
 
-if [ "$sent" -eq "$received" ]; then
+if [ "$received" -gt "$target" ]; then
   success=true
 fi
 
