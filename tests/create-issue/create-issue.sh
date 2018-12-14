@@ -22,7 +22,7 @@ do
     issueName="$issueNameBase-$i"
     sent=$[$sent + 1]
     # Create issue
-    createdIssueID=$($moth create-issue --name $issueName --type Deployment --description "This is an issue created by Lotto" -o id)
+    createdIssueID=$($moth create-issue --name $issueName --type Deployment --description "This is an issue created by Lotto" --waitAndPrint)
     # Verify that the issue was actually created
     nameOfIssueCreated=$($moth inspect-issue $createdIssueID -o json | jq -r '.name')
     if [[ "$nameOfIssueCreated" == "$issueName" ]]; then
