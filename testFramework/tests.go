@@ -227,6 +227,7 @@ func combineTestResults(results []TestResult) TestResult {
 		end.Received += result.Received
 		end.Rate += result.Rate
 		end.Duration += result.Duration
+		end.Raw = fmt.Sprintf("%s\n%s", end.Raw, result.Raw)
 	}
 	end.Rate = end.Rate / float32(len(results))
 	end.SuccessPercentage = float32(end.Received) / float32(end.Sent) * 100

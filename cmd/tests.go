@@ -37,6 +37,9 @@ func testProcedure(test *testFramework.TestConfig, env environment.Environment, 
 
 	// RESULTS print test results
 	pretty.PrintTable(result.StringSlice())
+	if !result.Success {
+		fmt.Printf("Raw output: %s\n", result.Raw)
+	}
 
 	// VERIFY starbase status
 	health := mother.CheckInstanceHealth()
