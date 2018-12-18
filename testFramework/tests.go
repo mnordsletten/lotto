@@ -128,7 +128,7 @@ func (t *TestConfig) RunTest(iterations int, env environment.Environment, mother
 
 		// Parse test results
 		if err = json.Unmarshal(testOutput, &testResult); err != nil {
-			return testResult, fmt.Errorf("could not parse testResults: %v", err)
+			return testResult, fmt.Errorf("could not parse testResults: %v\ntestOutput: %s", err, testOutput)
 		}
 
 		// Calculate success
