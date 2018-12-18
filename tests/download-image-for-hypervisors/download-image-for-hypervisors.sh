@@ -2,6 +2,7 @@
 # Script used for checking that downloading an image for each hypervisor works
 set -e
 
+cutOffFileSize="10000"
 moth="{{.MothershipBinPathAndName}}"
 
 # Setup: Build an image to download
@@ -26,8 +27,12 @@ do
     sent=$[$sent + 1]
     # Download image
     raw+=$($moth pull-image $imgID $downloadedImgName --format $hypervisor 2>&1)
+    img_file_size=$(du -sk $downloadedImgName | awk '{print $1}')
     if [ "$?" -eq "0" ]; then
-      received=$[$received + 1]
+      if [ "$img_file_size" -gt "$cutOffFileSize" ]; then
+        received=$[$received + 1]
+      fi
+      raw+="$downloadedImgName size: $img_file_size, is too small"
     fi
 done
 
