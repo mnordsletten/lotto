@@ -1,0 +1,11 @@
+{
+  "clientcommandscript": "iperf-both-ways.sh",
+  "naclfile": "gateway.nacl",
+  "setup": {
+    "client1": "client-iperf3.sh",
+    "client3": "server-iperf3.sh"
+  },
+  "cleanup": {
+    "client3": "server-iperf3-cleanup.sh"
+  }
+}
