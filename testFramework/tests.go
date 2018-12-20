@@ -7,6 +7,8 @@ import (
 	"html"
 	"html/template"
 	"io/ioutil"
+	"os"
+	"os/signal"
 	"path"
 	"strconv"
 	"time"
@@ -32,6 +34,7 @@ type TestConfig struct {
 	testPath            string
 	Name                string
 	NaclFileShasum      string
+	DebugMode           bool
 }
 
 type TestResponse struct {
@@ -104,6 +107,14 @@ func (t *TestConfig) RunTest(iterations int, env environment.Environment, mother
 		return TestResult{}, fmt.Errorf("error preparing test: %v", err)
 	}
 	defer t.cleanupTest(mother, env)
+	if t.DebugMode {
+		logrus.Info("Debug Mode. Waiting for ctrl-c to shut down")
+		shutdown := make(chan os.Signal)
+		signal.Notify(shutdown, os.Interrupt)
+		<-shutdown
+		logrus.Info("Performing lotto shutdown...")
+		return TestResult{}, nil
+	}
 	var results []TestResult
 	logrus.Info("Starting test")
 	for i := 0; i < iterations; i++ {

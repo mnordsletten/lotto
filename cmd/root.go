@@ -19,6 +19,7 @@ var (
 	forceNewStarbase bool
 	skipRebuildTest  bool
 	skipVerifyEnv    bool
+	debugMode        bool
 	numRuns          int
 	loops            int
 
@@ -115,6 +116,7 @@ func init() {
 	RootCmd.Flags().BoolVar(&forceNewStarbase, "force-new-starbase", false, "create a new starbase")
 	RootCmd.Flags().BoolVar(&skipRebuildTest, "skipRebuildTest", false, "push new nacl and rebuild before deploying")
 	RootCmd.Flags().BoolVar(&skipVerifyEnv, "skipVerifyEnv", false, "skip environment verification")
+	RootCmd.Flags().BoolVar(&debugMode, "debugmode", false, "Set up environment, but don't run tests, allow for debugging. Aborted by ctrl-c")
 	RootCmd.Flags().IntVarP(&numRuns, "numTestRuns", "n", 1, "number of test iterations to run for each test")
 	RootCmd.Flags().IntVarP(&loops, "loops", "l", 1, "number of loops for all tests to run, 0 means infinite")
 	RootCmd.Flags().StringVarP(&tag, "tag", "t", "", "Tag to give folder that stores testResults, if none then testResults are not saved")

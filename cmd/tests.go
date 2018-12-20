@@ -74,6 +74,9 @@ func getTestsToRun(possibleTests []string) ([]*testFramework.TestConfig, error) 
 		if err != nil {
 			return nil, fmt.Errorf("Could not read test spec: %v", err)
 		}
+
+		// enable debugMode if specified
+		test.DebugMode = debugMode
 		tests = append(tests, test)
 	}
 	return tests, nil
