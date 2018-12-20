@@ -115,8 +115,10 @@ func (m *Mothership) CheckStarbaseIDInUse() bool {
 
 func (m *Mothership) waitUntilStarbaseConnects(tag string) (string, error) {
 	logrus.Debugf("Now waiting for starbase with tag: %s to connect", tag)
-	ids := make(map[string]interface{})
-	deadLine := time.Now().Add(180 * time.Second)
+	var ids []struct {
+		ID string `json:"id"`
+	}
+	deadLine := time.Now().Add(120 * time.Second)
 	for time.Now().Before(deadLine) {
 		req := fmt.Sprintf("search %s --instancefilter tag -o json", tag)
 		if output, err := m.bin(req); err == nil {
@@ -125,10 +127,10 @@ func (m *Mothership) waitUntilStarbaseConnects(tag string) (string, error) {
 			if err != nil {
 				return "", fmt.Errorf("error unmarshaling json from search: %v", err)
 			}
-			for key := range ids {
+			for _, id := range ids {
 				// there is at least 1 key in the output
 				logrus.Debugf("Starbase with tag: %s connected", tag)
-				return key, nil
+				return id.ID, nil
 			}
 		}
 		time.Sleep(2 * time.Second)
