@@ -1,0 +1,11 @@
+{
+  "naclfile": "gateway.nacl",
+  "tests": {
+    "../../testTypes/ping": {
+      ".target": "10.100.0.150"
+    },
+    "../../testTypes/downloadFile": {
+      ".serverAddress": "10.100.0.150:8080"
+    }
+  }
+}
