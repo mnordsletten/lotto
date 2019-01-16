@@ -1,0 +1,10 @@
+{
+  "preset1": [
+    "sudo tc qdisc del root dev $device",
+    "sudo tc qdisc add dev $device root netem delay 100ms 50ms 20%"
+  ],
+  "preset2": [
+    "sudo tc qdisc del root dev $device",
+    "sudo tc qdisc add dev $device root netem delay 100ms reorder 20% 20%"
+  ]
+}

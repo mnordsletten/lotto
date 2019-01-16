@@ -102,19 +102,7 @@ func (c TestConfig) StringSlice() [][]string {
 // RunTest runs the clientCmdScript on either host or client1 level number of times and returns a TestResult
 func (t *TestConfig) RunTest(iterations int, env environment.Environment, mother *mothership.Mothership) (TestResult, error) {
 	// Prepare test before run
-	logrus.Info("Preparing clients")
-	if err := t.runScriptsOnClients(env, t.Setup); err != nil {
-		return TestResult{}, fmt.Errorf("error preparing test: %v", err)
-	}
-	defer t.cleanupTest(mother, env)
-	if t.DebugMode {
-		logrus.Info("Debug Mode. Waiting for ctrl-c to shut down")
-		shutdown := make(chan os.Signal)
-		signal.Notify(shutdown, os.Interrupt)
-		<-shutdown
-		logrus.Info("Performing lotto shutdown...")
-		return TestResult{}, nil
-	}
+
 	var results []TestResult
 	logrus.Info("Starting test")
 	for i := 0; i < iterations; i++ {
@@ -124,6 +112,7 @@ func (t *TestConfig) RunTest(iterations int, env environment.Environment, mother
 		start := time.Now()
 		var err error
 		// Run test either in client or in host
+		defer t.cleanupTest(mother, env)
 		if t.ClientCommandScript != "" {
 			if testOutput, err = t.runClientTest(env); err != nil {
 				return testResult, fmt.Errorf("could not run client test: %v", err)
@@ -149,6 +138,23 @@ func (t *TestConfig) RunTest(iterations int, env environment.Environment, mother
 }
 
 func (t *TestConfig) runClientTest(env environment.Environment) ([]byte, error) {
+	// Setup
+	logrus.Info("Preparing clients")
+	if err := t.runScriptsOnClients(env, t.Setup); err != nil {
+		return nil, fmt.Errorf("error preparing test: %v", err)
+	}
+	if t.DebugMode {
+		logrus.Info("Debug Mode. Waiting for ctrl-c to shut down")
+		shutdown := make(chan os.Signal)
+		signal.Notify(shutdown, os.Interrupt)
+		<-shutdown
+		logrus.Info("Performing lotto shutdown...")
+		return nil, nil
+	}
+
+	// Perform template substitution on client script
+
+	//
 	testOutput, err := env.RunClientCmdScript(1, t.ClientCommandScript)
 	if err != nil {
 		return testOutput, fmt.Errorf("could not run client command script: %v", err)

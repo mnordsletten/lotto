@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/mnordsletten/lotto/environment"
 	"github.com/mnordsletten/lotto/mothership"
@@ -12,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func testProcedure(test *testFramework.TestConfig, env environment.Environment, mother *mothership.Mothership) (bool, error) {
+func testProcedure(test *testFramework.Service, env environment.Environment, mother *mothership.Mothership) (bool, error) {
 	pretty := pretty.NewPrettyTest(test.Name)
 	pretty.PrintHeader()
 	pretty.PrintTable(test.StringSlice())
@@ -56,20 +55,10 @@ func testProcedure(test *testFramework.TestConfig, env environment.Environment, 
 	return result.Success, nil
 }
 
-func getTestsToRun(possibleTests []string) ([]*testFramework.TestConfig, error) {
-	// Filter out the tests that should be skipped (folder name starts with "skip")
-	var testsToRun []string
-	for _, arg := range possibleTests {
-		// Skipping tests starting with "tests/skip"
-		if !strings.HasPrefix(arg, "tests/skip") {
-			testsToRun = append(testsToRun, arg)
-		} else {
-			logrus.Warningf("Skipping test %s", arg)
-		}
-	}
+func getTestsToRun(possibleTests []string) ([]*testFramework.Service, error) {
 	// Get the TestConfig for every test that should be run
-	var tests []*testFramework.TestConfig
-	for _, testPath := range testsToRun {
+	var tests []*testFramework.Service
+	for _, testPath := range possibleTests {
 		test, err := testFramework.ReadFromDisk(testPath)
 		if err != nil {
 			return nil, fmt.Errorf("Could not read test spec: %v", err)
@@ -82,7 +71,7 @@ func getTestsToRun(possibleTests []string) ([]*testFramework.TestConfig, error) 
 	return tests, nil
 }
 
-func build(test *testFramework.TestConfig, mother *mothership.Mothership) error {
+func build(test *testFramework.Service, mother *mothership.Mothership) error {
 	// Return early if skip rebuild has been set
 	if test.SkipRebuild {
 		return nil
@@ -102,27 +91,3 @@ func build(test *testFramework.TestConfig, mother *mothership.Mothership) error 
 	}
 	return nil
 }
-
-/*
-func saveResultsToDisk(result testFramework.TestResult, mother *mothership.Mothership) error {
-	if len(tag) > 0 // blah blah
-	// Create folder with name of versions getting tested
-	mVersion, err := mother.ServerVersion()
-	if err != nil {
-		return fmt.Errorf("error getting mothership server version: %v", err)
-	}
-	iosVersion, err := mother.StarbaseVersion()
-	if err != nil {
-		return fmt.Errorf("error getting starbase IncludeOS version: %v", err)
-	}
-	folderPath := path.Join("testResults", fmt.Sprintf("mothership.%s_IncludeOS.%s_%s", mVersion, iosVersion, tag))
-	if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
-		return fmt.Errorf("Could not create testResults folder: %v", err)
-	}
-	if len(result.Name) > 0 {
-		util.StructToCsvOutput(result, path.Join(folderPath, result.Name))
-	}
-	healthName := fmt.Sprintf("instanceHealth-%s", time.Now().Format("2006-01-02"))
-	util.StructToCsvOutput(health, path.Join(folderPath, healthName))
-}
-*/

@@ -28,30 +28,26 @@ func (t *TestConfig) SaveToDisk() error {
 }
 
 // ReadFromDisk takes a path and reads the testspec and returns a TestConfig
-func ReadFromDisk(testPath string) (*TestConfig, error) {
-	test := &TestConfig{}
-	test.testPath = testPath
-	test.Name = path.Base(test.testPath)
-	if err := verifyTestFiles(testPath); err != nil {
-		return test, err
-	}
-	file, err := ioutil.ReadFile(path.Join(test.testPath, "testspec.json"))
+func ReadFromDisk(servicePath string) (*Service, error) {
+	test := &Service{}
+	test.ServicePath = servicePath
+	test.Name = path.Base(test.ServicePath)
+	/*
+		if err := verifyTestFiles(testPath); err != nil {
+			return test, err
+		}
+	*/
+	testSpec, err := ioutil.ReadFile(path.Join(test.ServicePath, "testspec.json"))
 	if err != nil {
-		return test, fmt.Errorf("error reading test file %s: %v", test.testPath, err)
+		return test, fmt.Errorf("error reading test file %s: %v", test.ServicePath, err)
 	}
-	if err = json.Unmarshal(file, test); err != nil {
+	if err = json.Unmarshal(testSpec, test); err != nil {
 		return test, fmt.Errorf("error decoding json: %v", err)
 	}
 
 	// append testPath to all files
 	if test.NaclFile != "" {
-		test.NaclFile = path.Join(test.testPath, test.NaclFile)
-	}
-	if test.ClientCommandScript != "" {
-		test.ClientCommandScript = path.Join(test.testPath, test.ClientCommandScript)
-	}
-	if test.HostCommandScript != "" {
-		test.HostCommandScript = path.Join(test.testPath, test.HostCommandScript)
+		test.NaclFile = path.Join(test.ServicePath, test.NaclFile)
 	}
 	if test.CustomServicePath != "" {
 		dir, err := os.Executable()
@@ -59,7 +55,7 @@ func ReadFromDisk(testPath string) (*TestConfig, error) {
 			return test, fmt.Errorf("error getting current dir: %v", err)
 		}
 		// Requires full path due to getting mounted into docker
-		test.CustomServicePath = path.Join(path.Dir(dir), test.testPath, test.CustomServicePath)
+		test.CustomServicePath = path.Join(path.Dir(dir), test.ServicePath, test.CustomServicePath)
 	}
 	return test, nil
 }
