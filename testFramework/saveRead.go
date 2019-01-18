@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 )
 
+/*
 func (t *TestConfig) SaveToDisk() error {
 	// Create data dir if it does not exist
 	if _, err := os.Stat("data"); os.IsNotExist(err) {
@@ -26,6 +27,7 @@ func (t *TestConfig) SaveToDisk() error {
 	}
 	return nil
 }
+*/
 
 // ReadFromDisk takes a path and reads the testspec and returns a TestConfig
 func ReadFromDisk(servicePath string) (*Service, error) {

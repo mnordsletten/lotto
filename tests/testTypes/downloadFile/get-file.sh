@@ -1,10 +1,10 @@
 # http testing (downloads file from load balancer)
 # Script used for performing http requests (get file.txt from lotto-client3 10.100.0.150 and lotto-client4 10.100.0.160)
 
-SERVER_ADDRESS={{.serverAddress}}
+SERVER_ADDRESS={{index .Template "serverAddress"}}
 
 # Input values to cmd
-sent=5
+sent=1
 received=0
 
 # Loop and attempt to download file 5 times. Controlling the size of the download for success

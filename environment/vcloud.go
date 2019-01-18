@@ -107,13 +107,13 @@ func (v *Vcloud) RunClientCmd(clientNum int, cmd string) (string, error) {
 // RunClientCmdScript takes a file and runs it on the remote machine
 // It does this by opening an ssh connection and passing in the script contents
 // to the running bash process
-func (v *Vcloud) RunClientCmdScript(clientNum int, file string) ([]byte, error) {
-	logrus.Debugf("Running client script: %s. with: %s", file, v)
+func (v *Vcloud) RunClientCmdScript(clientNum int, script []byte) ([]byte, error) {
+	logrus.Debugf("Running client script: with: %s", v)
 	clientStr, err := v.Clients.GetClientByInt(clientNum)
 	if err != nil {
 		return nil, fmt.Errorf("error getting client: %v", err)
 	}
-	return runSSHScript(file, clientStr)
+	return runSSHScript(script, clientStr)
 }
 
 func (v *Vcloud) GetMothershipName() string {

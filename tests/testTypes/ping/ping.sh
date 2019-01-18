@@ -2,7 +2,7 @@
 # Script used for pinging the instance at a fixed rate
 # Returns rate and average response time
 
-TARGET={{.target}}
+TARGET={{index .Template "target"}}
 sent=20
 rate=5 # Requests pr second, higher than 5 requires sudo
 raw=$(ping -c $sent -i $(awk "BEGIN {print 1/$rate}") -q $TARGET)

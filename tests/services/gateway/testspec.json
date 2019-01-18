@@ -4,14 +4,14 @@
     {
       "path": "../../testTypes/ping",
       "template": {
-        "key": ".target",
+        "key": "target",
         "value": "10.100.0.150"
       }
     },
     {
       "path": "../../testTypes/downloadFile",
       "template": {
-        "key": ".serverAddress",
+        "key": "serverAddress",
         "value": "10.100.0.150:8080"
       }
     }

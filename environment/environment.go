@@ -2,7 +2,6 @@ package environment
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -48,7 +47,7 @@ type Environment interface {
 	GetUplinkInfo() (UplinkInfo, error)
 	LaunchCmdOptions(string) []string
 	RunClientCmd(clientNum int, cmd string) (string, error)
-	RunClientCmdScript(clientNum int, file string) ([]byte, error)
+	RunClientCmdScript(clientNum int, script []byte) ([]byte, error)
 	GetMothershipName() string
 }
 
@@ -97,12 +96,8 @@ func verifyRoute(env Environment, route string, clientNum int) error {
 	return nil
 }
 
-func runSSHScript(file, SSHRemote string) ([]byte, error) {
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, fmt.Errorf("could not read file %s: %v", file, err)
-	}
-	out, err := util.ExternalCommandInput(string(b), []string{"ssh", "-o", "StrictHostKeyChecking=no", SSHRemote})
+func runSSHScript(script []byte, SSHRemote string) ([]byte, error) {
+	out, err := util.ExternalCommandInput(string(script), []string{"ssh", "-o", "StrictHostKeyChecking=no", SSHRemote})
 	if err != nil {
 		return nil, fmt.Errorf("problem running external command: %v", err)
 	}

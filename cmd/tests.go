@@ -6,21 +6,19 @@ import (
 	"github.com/mnordsletten/lotto/environment"
 	"github.com/mnordsletten/lotto/mothership"
 	"github.com/mnordsletten/lotto/prettyoutput"
-	"github.com/mnordsletten/lotto/reporting"
 	"github.com/mnordsletten/lotto/testFramework"
-	"github.com/sirupsen/logrus"
 )
 
-func testProcedure(test *testFramework.Service, env environment.Environment, mother *mothership.Mothership) (bool, error) {
-	pretty := pretty.NewPrettyTest(test.Name)
+func testProcedure(service *testFramework.Service, tests []string, env environment.Environment, mother *mothership.Mothership) (bool, error) {
+	pretty := pretty.NewPrettyTest(service.Name)
 	pretty.PrintHeader()
-	pretty.PrintTable(test.StringSlice())
+	pretty.PrintTable(service.StringSlice())
 
 	// BUILD & DEPLOY. 3 options:
 	// 1. Push NaCl and build on Mothership
 	// 2. Build service locally using docker
 	// 3. No building at all
-	if err := build(test, mother); err != nil {
+	if err := build(service, mother); err != nil {
 		return false, fmt.Errorf("error building: %v", err)
 	}
 
@@ -29,46 +27,50 @@ func testProcedure(test *testFramework.Service, env environment.Environment, mot
 	// 2. CLIENTcommandscript
 	// Run client command
 	// numRuns flag taken into account
-	result, err := test.RunTest(numRuns, env, mother)
-	if err != nil {
-		return false, fmt.Errorf("error running test %v", err)
+	for _, testPath := range tests {
+		result, err := service.RunTest(testPath, env, mother)
+		if err != nil {
+			return false, fmt.Errorf("error testing service %v", err)
+		}
+		// RESULTS print test results
+		pretty.PrintTable(result.StringSlice())
+		if !result.Success {
+			fmt.Printf("Raw output: %s\n", result.Raw)
+		}
 	}
 
-	// RESULTS print test results
-	pretty.PrintTable(result.StringSlice())
-	if !result.Success {
-		fmt.Printf("Raw output: %s\n", result.Raw)
-	}
+	/*
+		// VERIFY starbase status
+		health := mother.CheckInstanceHealth()
+		logrus.Info(health)
 
-	// VERIFY starbase status
-	health := mother.CheckInstanceHealth()
-	logrus.Info(health)
-
-	pretty.EndTest()
-	reporting.SendReport(reporting.Dashboard{
-		Address:           "http://localhost:7070/upload",
-		MothershipVersion: "v1",
-		IncludeOSVersion:  builderName,
-		Environment:       cmdEnv,
-		TestResult:        result,
-	})
-	return result.Success, nil
+		pretty.EndTest()
+		reporting.SendReport(reporting.Dashboard{
+			Address:           "http://localhost:7070/upload",
+			MothershipVersion: "v1",
+			IncludeOSVersion:  builderName,
+			Environment:       cmdEnv,
+			TestResult:        result,
+		})
+	*/
+	//return result.Success, nil
+	return true, nil
 }
 
-func getTestsToRun(possibleTests []string) ([]*testFramework.Service, error) {
-	// Get the TestConfig for every test that should be run
-	var tests []*testFramework.Service
-	for _, testPath := range possibleTests {
-		test, err := testFramework.ReadFromDisk(testPath)
+func getServicesToTest(possibleServices []string) ([]*testFramework.Service, error) {
+	// Get the config for every service to be tested
+	var services []*testFramework.Service
+	for _, servicePath := range possibleServices {
+		service, err := testFramework.ReadFromDisk(servicePath)
 		if err != nil {
-			return nil, fmt.Errorf("Could not read test spec: %v", err)
+			return nil, fmt.Errorf("Could not read service spec: %v", err)
 		}
 
 		// enable debugMode if specified
-		test.DebugMode = debugMode
-		tests = append(tests, test)
+		service.DebugMode = debugMode
+		services = append(services, service)
 	}
-	return tests, nil
+	return services, nil
 }
 
 func build(test *testFramework.Service, mother *mothership.Mothership) error {

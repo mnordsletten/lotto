@@ -83,7 +83,7 @@ func (f *Fusion) RunClientCmd(clientNum int, cmd string) (string, error) {
 	return runRemoteCmd(cmd, clientStr)
 }
 
-func (f *Fusion) RunClientCmdScript(clientNum int, file string) ([]byte, error) {
+func (f *Fusion) RunClientCmdScript(clientNum int, file []byte) ([]byte, error) {
 	clientStr, err := f.Clients.GetClientByInt(clientNum)
 	if err != nil {
 		return nil, fmt.Errorf("error getting client: %v", err)

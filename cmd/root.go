@@ -13,6 +13,7 @@ import (
 var (
 	builderName      string
 	cmdEnv           string
+	tests            []string
 	tag              string
 	verboseLogging   bool
 	setUpEnv         bool
@@ -75,20 +76,21 @@ var RootCmd = &cobra.Command{
 		}
 
 		// Test setup
-		tests, err := getTestsToRun(args)
+		services, err := getServicesToTest(args)
 		if err != nil {
-			logrus.Fatalf("Error getting tests to run: %v", err)
+			logrus.Fatalf("Error getting services to run: %v", err)
 		}
+
 		// Run the tests
 		var testFailed bool
 		var testUnstable bool
 		for loopIndex := 0; loopIndex < loops || loops == 0; loopIndex++ {
 			logrus.Infof("Test loop nr: %d, numRuns: %d", loopIndex+1, numRuns)
-			for _, test := range tests {
-				test.SkipRebuild = skipRebuildTest
-				passed, err := testProcedure(test, env, mother)
+			for _, service := range services {
+				service.SkipRebuild = skipRebuildTest
+				passed, err := testProcedure(service, tests, env, mother)
 				if err != nil {
-					logrus.Warningf("unstable environment, could not run test without problems %s: %v", test.Name, err)
+					logrus.Warningf("unstable environment, could not run test without problems %s: %v", service.Name, err)
 					testUnstable = true
 					continue
 				}
@@ -111,15 +113,14 @@ func init() {
 	RootCmd.Flags().StringVarP(&builderName, "buildername", "b", "", "The IncludeOS builder to use for running the test")
 	RootCmd.MarkFlagRequired("buildername")
 	RootCmd.Flags().StringVar(&cmdEnv, "env", "fusion", "environment to use")
+	RootCmd.Flags().StringSliceVarP(&tests, "tests", "t", []string{}, "path of tests to run")
 	RootCmd.Flags().BoolVarP(&verboseLogging, "verbose", "v", false, "verobse output")
 	RootCmd.Flags().BoolVar(&setUpEnv, "create-env", false, "set up environment")
 	RootCmd.Flags().BoolVar(&forceNewStarbase, "force-new-starbase", false, "create a new starbase")
-	RootCmd.Flags().BoolVar(&skipRebuildTest, "skipRebuildTest", false, "push new nacl and rebuild before deploying")
-	RootCmd.Flags().BoolVar(&skipVerifyEnv, "skipVerifyEnv", false, "skip environment verification")
+	RootCmd.Flags().BoolVarP(&skipRebuildTest, "skipRebuildTest", "r", false, "push new nacl and rebuild before deploying")
+	RootCmd.Flags().BoolVarP(&skipVerifyEnv, "skipVerifyEnv", "e", false, "skip environment verification")
 	RootCmd.Flags().BoolVar(&debugMode, "debugmode", false, "Set up environment, but don't run tests, allow for debugging. Aborted by ctrl-c")
-	RootCmd.Flags().IntVarP(&numRuns, "numTestRuns", "n", 1, "number of test iterations to run for each test")
 	RootCmd.Flags().IntVarP(&loops, "loops", "l", 1, "number of loops for all tests to run, 0 means infinite")
-	RootCmd.Flags().StringVarP(&tag, "tag", "t", "", "Tag to give folder that stores testResults, if none then testResults are not saved")
 
 	RootCmd.Flags().StringVar(&mothershipConfigPath, "mship-config", "config-mothership.json", "Mothership config file")
 	RootCmd.Flags().StringVar(&envConfigPath, "env-config", "config-environment.json", "Environments config file")

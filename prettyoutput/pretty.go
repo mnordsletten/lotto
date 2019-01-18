@@ -25,7 +25,7 @@ func NewPrettyTest(name string) PrettyTest {
 }
 
 func (t PrettyTest) PrintHeader() {
-	title := fmt.Sprintf(" test: %s ", t.Name)
+	title := fmt.Sprintf(" Service: %s ", t.Name)
 	lenTitle := len(title)
 	fillEachSide := (width - lenTitle) / 2
 	fill := strings.Repeat("=", fillEachSide)
