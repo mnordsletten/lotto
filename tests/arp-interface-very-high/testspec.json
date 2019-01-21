@@ -1,7 +1,0 @@
-{
-  "clientcommandscript": "nping-arp.sh",
-  "naclfile": "interface.nacl",
-  "setup": {
-      "client1": "install_nmap.sh"
-  }
-}
