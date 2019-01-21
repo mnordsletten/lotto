@@ -1,0 +1,6 @@
+{
+  "clientcommandscript": "nping-arp.sh",
+  "setup": {
+    "client1": "install_nmap.sh"
+  }
+}

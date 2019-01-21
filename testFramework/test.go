@@ -23,7 +23,7 @@ type Test struct {
 	Cleanup             environment.SSHClients `json:"cleanup"`
 }
 
-func (t *Test) Run(env environment.Environment, content TemplateKeyValue) (TestResult, error) {
+func (t *Test) Run(env environment.Environment, templates []TemplateKeyValue) (TestResult, error) {
 	var result TestResult
 	result.Name = t.Name
 	// Prepare clients/servers for test
@@ -46,14 +46,18 @@ func (t *Test) Run(env environment.Environment, content TemplateKeyValue) (TestR
 		return result, fmt.Errorf("error parsing template: %v", err)
 	}
 
-	templ := struct {
+	tem := struct {
 		Template map[string]string
-	}{
-		Template: map[string]string{content.Key: content.Value},
+	}{}
+
+	tem.Template = make(map[string]string, len(templates))
+
+	for _, t := range templates {
+		tem.Template[t.Key] = t.Value
 	}
 
 	var script bytes.Buffer
-	if err = m.Execute(&script, templ); err != nil {
+	if err = m.Execute(&script, tem); err != nil {
 		return result, fmt.Errorf("error executing template: %v", err)
 	}
 	start := time.Now()

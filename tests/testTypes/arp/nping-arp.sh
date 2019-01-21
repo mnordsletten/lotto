@@ -2,11 +2,13 @@
 # Script used for arp pinging the instance at a fixed rate
 # Returns rate and average response time
 
+TARGET={{index .Template "target"}}
+
 # Input values to cmd
 sent=500
 target=480
 rate=50 # Requests pr second, higher than 5 requires sudo
-raw=$(sudo nping --arp -q --count $sent --rate $rate 10.100.0.30)
+raw=$(sudo nping --arp -q --count $sent --rate $rate $TARGET)
 
 # Parse output
 received=$(printf "%s" "$raw" | grep Rcvd | cut -d ' ' -f 8)

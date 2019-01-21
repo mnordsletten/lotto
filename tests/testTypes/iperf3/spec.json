@@ -1,0 +1,12 @@
+{
+  "clientcommandscript": "iperf-both-ways.sh",
+  "setup": {
+    "client1": "client-install-iperf3.sh",
+    "client3": "server-install-iperf3.sh",
+    "client4": "server-install-iperf3.sh"
+  },
+  "cleanup": {
+    "client3": "server-cleanup-iperf3.sh",
+    "client4": "server-cleanup-iperf3.sh"
+  }
+}

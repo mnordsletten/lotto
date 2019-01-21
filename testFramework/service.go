@@ -27,8 +27,8 @@ type Service struct {
 }
 
 type TestTypeConfig struct {
-	Path     string           `json:"path"`
-	Template TemplateKeyValue `json:"template"`
+	Path     string             `json:"path"`
+	Template []TemplateKeyValue `json:"template"`
 }
 
 type TemplateKeyValue struct {
