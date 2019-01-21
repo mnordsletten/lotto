@@ -61,6 +61,7 @@ func (t *Test) Run(env environment.Environment, templates []TemplateKeyValue) (T
 		return result, fmt.Errorf("error executing template: %v", err)
 	}
 	start := time.Now()
+	logrus.Infof("Starting test: %s", t.Name)
 	testOutput, err := env.RunClientCmdScript(1, script.Bytes())
 	if err != nil {
 		return result, fmt.Errorf("error running client command script: %v", err)
