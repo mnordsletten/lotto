@@ -1,4 +1,5 @@
-# Basically: nping --udp -p 4242 10.100.0.30 --data-string hi
+
+TARGET={{index .Template "target"}}
 
 sent=1000
 rate=100 # Requests pr second, higher than 5 requires sudo
@@ -7,7 +8,7 @@ port=4242
 # delay=
 data="hi"
 
-raw=$(nping -c $sent --rate $rate $mode -p $port --data-string $data 10.100.0.30)
+raw=$(nping -c $sent --rate $rate $mode -p $port --data-string $data $TARGET)
 res=$(printf "%s" "$raw" | grep "UDP packets")
 
 # Possible:

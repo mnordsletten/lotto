@@ -44,6 +44,15 @@
           "value": "10.100.0.150:8080"
         }
       ]
+    },
+    {
+      "path": "../../testTypes/stressDownload",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.150:8080"
+        }
+      ]
     }
   ]
 }
