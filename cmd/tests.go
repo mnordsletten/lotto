@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"path"
 
 	"github.com/mnordsletten/lotto/environment"
 	"github.com/mnordsletten/lotto/mothership"
@@ -27,6 +29,13 @@ func testProcedure(service *testFramework.Service, tests []string, env environme
 	// 2. CLIENTcommandscript
 	// Run client command
 	// numRuns flag taken into account
+	if len(tests) == 0 {
+		var err error
+		tests, err = findAllTests()
+		if err != nil {
+			return false, fmt.Errorf("error locating all tests: %v", err)
+		}
+	}
 	for _, testPath := range tests {
 		results, err := service.RunTest(testPath, env, mother)
 		if err != nil {
@@ -94,4 +103,18 @@ func build(test *testFramework.Service, mother *mothership.Mothership) error {
 		}
 	}
 	return nil
+}
+
+func findAllTests() ([]string, error) {
+	var allTests []string
+	testPath := "tests/testTypes"
+	files, err := ioutil.ReadDir(testPath)
+	if err != nil {
+		return allTests, fmt.Errorf("")
+	}
+	for _, file := range files {
+		allTests = append(allTests, path.Join(testPath, file.Name()))
+	}
+
+	return allTests, nil
 }
