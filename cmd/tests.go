@@ -28,14 +28,16 @@ func testProcedure(service *testFramework.Service, tests []string, env environme
 	// Run client command
 	// numRuns flag taken into account
 	for _, testPath := range tests {
-		result, err := service.RunTest(testPath, env, mother)
+		results, err := service.RunTest(testPath, env, mother)
 		if err != nil {
 			return false, fmt.Errorf("error testing service %v", err)
 		}
 		// RESULTS print test results
-		pretty.PrintTable(result.StringSlice())
-		if !result.Success {
-			fmt.Printf("Raw output: %s\n", result.Raw)
+		for _, result := range results {
+			pretty.PrintTable(result.StringSlice())
+			if !result.Success {
+				fmt.Printf("Raw output: %s\n", result.Raw)
+			}
 		}
 	}
 

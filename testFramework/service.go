@@ -47,28 +47,32 @@ func (s *Service) StringSlice() [][]string {
 	return output
 }
 
-func (s *Service) RunTest(testPath string, env environment.Environment, mother *mothership.Mothership) (TestResult, error) {
+func (s *Service) RunTest(testPath string, env environment.Environment, mother *mothership.Mothership) ([]TestResult, error) {
+	var testResults []TestResult
 	var testResult TestResult
-	if ok, test := s.CheckIfTestIsConfigured(testPath); ok {
+	tests := s.getConfiguredTests(testPath)
+	for _, test := range tests {
 		t, err := readTestSpec(testPath)
 		if err != nil {
-			return testResult, fmt.Errorf("error reading test spec: %v", err)
+			return testResults, fmt.Errorf("error reading test spec: %v", err)
 		}
 		testResult, err = t.Run(env, test.Template)
 		if err != nil {
-			return testResult, fmt.Errorf("error running test: %v", err)
+			return testResults, fmt.Errorf("error running test: %v", err)
 		}
+		testResults = append(testResults, testResult)
 	}
-	return testResult, nil
+	return testResults, nil
 }
 
-func (s *Service) CheckIfTestIsConfigured(testPath string) (bool, TestTypeConfig) {
+func (s *Service) getConfiguredTests(testPath string) []TestTypeConfig {
+	var tests []TestTypeConfig
 	for _, test := range s.Tests {
 		if strings.TrimSpace(testPath) == strings.TrimSpace(path.Join(s.ServicePath, test.Path)) {
-			return true, test
+			tests = append(tests, test)
 		}
 	}
-	return false, TestTypeConfig{}
+	return tests
 }
 
 func readTestSpec(specPath string) (*Test, error) {
