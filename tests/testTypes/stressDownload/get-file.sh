@@ -8,7 +8,7 @@ sent=5
 received=0
 
 # first stress the load-balancer
-sudo docker run --rm rcmorano/docker-hey -n 100 -c 50 http://$SERVER_ADDRESS/1GB_file.txt
+sudo docker run --rm rcmorano/docker-hey -n 100 -c 50 http://$SERVER_ADDRESS/1GB_file.txt 2>&1 > /dev/null
 
 # Loop and attempt to download file 5 times. Controlling the size of the download for success
 for i in $(seq 1 $sent); do

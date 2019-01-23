@@ -32,19 +32,28 @@ Gateway gw {
 
 // Targets that are on the inside network. Not exposed to the outside.
 TARGETS: {
-    PORT: 8080,
-    TAR01: { IPADDR: 10.100.0.150, PORT:1500 },
-    TAR02: { IPADDR: 10.100.0.160, PORT:1600 }
+    WEB_PORT: 8080,
+    IPERF_PORT: 12345,
+    WEB_01: { IPADDR: 10.100.0.150, PORT:1500 },
+    WEB_02: { IPADDR: 10.100.0.160, PORT:1600 },
+    IPERF_01: { IPADDR: 10.100.0.150, PORT:1501 },
+    IPERF_02: { IPADDR: 10.100.0.160, PORT:1601 }
 }
 
 Nat::IP dnat {
     Nat::TCP {
         if (ip.daddr == outside.address) {
-            if (tcp.dport == TARGETS.TAR01.PORT) {
-                dnat(TARGETS.TAR01.IPADDR, TARGETS.PORT)
+            if (tcp.dport == TARGETS.WEB_01.PORT) {
+                dnat(TARGETS.WEB_01.IPADDR, TARGETS.WEB_PORT)
             }
-            if (tcp.dport == TARGETS.TAR02.PORT) {
-                dnat(TARGETS.TAR02.IPADDR, TARGETS.PORT)
+            if (tcp.dport == TARGETS.WEB_02.PORT) {
+                dnat(TARGETS.WEB_02.IPADDR, TARGETS.WEB_PORT)
+            }
+            if (tcp.dport == TARGETS.IPERF_01.PORT) {
+                dnat(TARGETS.IPERF_01.IPADDR, TARGETS.IPERF_PORT)
+            }
+            if (tcp.dport == TARGETS.IPERF_02.PORT) {
+                dnat(TARGETS.IPERF_02.IPADDR, TARGETS.IPERF_PORT)
             }
         }
     }
@@ -52,7 +61,10 @@ Nat::IP dnat {
 
 Nat::IP snat {
     Nat::TCP {
-        if (ip.daddr in TARGETS and tcp.dport == TARGETS.PORT) {
+        if (ip.daddr in TARGETS and tcp.dport == TARGETS.WEB_PORT) {
+            snat(inside.address)
+        }
+        if (ip.daddr in TARGETS and tcp.dport == TARGETS.IPERF_PORT) {
             snat(inside.address)
         }
     }

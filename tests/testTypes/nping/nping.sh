@@ -8,8 +8,8 @@
 SERVER_ADDRESS={{index .Template "serverAddress"}}
 SERVER_PORT={{index .Template "serverPort"}}
 
-sent=1000
-rate=200 # Requests pr second, higher than 5 requires sudo
+sent=600 # The apache server we use can only process up to 657 requests
+rate=100 # Requests pr second, higher than 5 requires sudo
 mode="--tcp-connect"
 
 raw=$(nping -c $sent $mode -p $SERVER_PORT --rate $rate $SERVER_ADDRESS)

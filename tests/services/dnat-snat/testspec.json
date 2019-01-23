@@ -1,11 +1,84 @@
 {
-  "clientcommandscript": "hey-http-test.sh",
   "naclfile": "dnat-snat.nacl",
-  "setup": {
-      "client1": "install_hey.sh",
-      "client3": "apache_server_setup.sh"
+  "tests": [
+    {
+      "path": "../../testTypes/ping",
+      "template": [
+        {
+          "key": "target",
+          "value": "10.100.0.30"
+        }
+      ]
     },
-  "cleanup": {
-    "client3": "apache_server_cleanup.sh"
-  }
+    {
+      "path": "../../testTypes/nping",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30"
+        },
+        {
+          "key": "serverPort",
+          "value": "1500"
+        }
+      ]
+    },
+    {
+      "path": "../../testTypes/nping",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30"
+        },
+        {
+          "key": "serverPort",
+          "value": "1600"
+        }
+      ]
+    },
+    {
+      "path": "../../testTypes/iperf3",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30"
+        },
+        {
+          "key": "serverPort",
+          "value": "1501"
+        }
+      ]
+    },
+    {
+      "path": "../../testTypes/iperf3",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30"
+        },
+        {
+          "key": "serverPort",
+          "value": "1601"
+        }
+      ]
+    },
+    {
+      "path": "../../testTypes/downloadFile",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30:1500"
+        }
+      ]
+    },
+    {
+      "path": "../../testTypes/stressDownload",
+      "template": [
+        {
+          "key": "serverAddress",
+          "value": "10.100.0.30:1500"
+        }
+      ]
+    }
+  ]
 }

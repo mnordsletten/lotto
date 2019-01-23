@@ -1,0 +1,1 @@
+Write this down for microlb.. Should have tested TCP<->TCP TCP<->TLS TLS<->TLS with and withoud delays and various protocols (netcat wget SSH etc) and file sizes and with and without active check (anyone have anything more ?
